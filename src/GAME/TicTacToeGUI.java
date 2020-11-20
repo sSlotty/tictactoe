@@ -1,14 +1,21 @@
 package GAME;
 
-import ADT.DoublyLinkedList;
-import ADT.Score;
+import ADT.linkedList;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class TicTacToeGUI extends JFrame {
+
+    private static final int[][] WIN_COMBO = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {1, 4, 7}, {2, 5, 8}, {3, 6, 9}, {1, 5, 9}, {2, 5, 7}};
+    ArrayList<Integer> PP;
+
+    linkedList nodeX = new linkedList();
+    linkedList nodeO = new linkedList();
+
     private Container pane;
     private String currentPlayer;
     private JButton[][] board;
@@ -17,11 +24,6 @@ public class TicTacToeGUI extends JFrame {
     private JMenu menu;
     private JMenuItem quit;
     private JMenuItem newGame;
-
-    private static final int[][] WIN_COMBO = {{1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{2,5,7}};
-
-    DoublyLinkedList nodeX = new DoublyLinkedList();
-    DoublyLinkedList nodeO = new DoublyLinkedList();
 
 
     public TicTacToeGUI() {
@@ -33,12 +35,15 @@ public class TicTacToeGUI extends JFrame {
         setSize(500, 500);
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
         setVisible(true);
+
         currentPlayer = "x";
         board = new JButton[3][3];
         hasWinner = false;
         intializeBoard();
         intializeMenuBar();
+
     }
 
     private void intializeMenuBar() {
@@ -52,6 +57,7 @@ public class TicTacToeGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     resetBoard();
+                    clearGame();
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -90,6 +96,7 @@ public class TicTacToeGUI extends JFrame {
                 JButton btn = new JButton();
                 btn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 100));
                 board[i][j] = btn;
+                board[i][j].setBackground(Color.BLUE);
                 finalCount = finalCount + 1;
                 int finalCount1 = finalCount;
                 int finalCount2 = finalCount;
@@ -101,7 +108,6 @@ public class TicTacToeGUI extends JFrame {
                         if (((JButton) e.getSource()).getText().equals("") && hasWinner == false) {
                             btn.setText(currentPlayer);
                             setData(finalCount2);
-//                            System.out.println(currentPlayer + " Count :" + finalCount1 + ",");
                             hasWinner();
                             togglePlayer();
 
@@ -114,24 +120,27 @@ public class TicTacToeGUI extends JFrame {
         }
     }
 
-    private void setData(int data){
-        if(currentPlayer.equals("x")) {
+    private void setData(int data) {
+        if (currentPlayer.equals("x")) {
             try {
-                Score scoreX = new Score("X", data);
-                nodeX.addData(scoreX);
-                nodeX.displayAll();
+                nodeX.push(data);
+                nodeX.head = nodeX.mergeSort(nodeX.head);
+                System.out.println();
+//                nodeX.printList(nodeX.head);
 
 
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
 
-        } else{
+        } else {
 
             try {
-                Score scoreO = new Score("O", data);
-                nodeO.addData(scoreO);
-                nodeO.displayAll();
+                nodeO.push(data);
+                nodeO.head = nodeO.mergeSort(nodeO.head);
+                System.out.println();
+//                nodeO.printList(nodeO.head);
+
 
             } catch (Exception exception) {
                 exception.printStackTrace();
@@ -147,40 +156,47 @@ public class TicTacToeGUI extends JFrame {
         }
     }
 
+    private void clearGame() {
+        nodeX.head = null;
+        nodeO.head = null;
+        hasWinner = false;
+        currentPlayer = "x";
+        PP.clear();
+    }
+
     private void hasWinner() {
+        String player = "A";
+        if (currentPlayer.equals("x")) {
+            player = "X";
+            PP = nodeX.allData(nodeX.head);
+        } else if (currentPlayer.equals("o")) {
+            player = "O";
+            PP = nodeO.allData(nodeO.head);
+        } else {
+            PP = null;
+        }
 
-        if (board[0][0].getText().equals(currentPlayer) && board[1][0].getText().equals(currentPlayer) && board[2][0].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
 
-        } else if (board[0][1].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][1].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
+        System.out.println(PP);
 
-        } else if (board[0][2].getText().equals(currentPlayer) && board[1][2].getText().equals(currentPlayer) && board[2][2].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
+        for (int i = 0; i < WIN_COMBO.length; i++) {
+            int count = 0;
+            for (int j = 0; j < PP.size(); j++) {
 
-        } else if (board[0][0].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][2].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
+                for (int k = 0; k <= 2; k++) {
+                    if (WIN_COMBO[i][k] == PP.get(j)) {
+                        count = count + 1;
+                        System.out.println(count);
+                        if (count == 3) {
+                            hasWinner = true;
+                            String winner = "Player : " + player + " is winner";
+                            JOptionPane.showMessageDialog(null, winner);
+                            break;
+                        }
+                    }
 
-        } else if (board[0][2].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][0].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
-
-        } else if (board[0][0].getText().equals(currentPlayer) && board[0][1].getText().equals(currentPlayer) && board[0][2].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
-
-        } else if (board[1][0].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[1][2].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
-
-        } else if (board[2][0].getText().equals(currentPlayer) && board[2][1].getText().equals(currentPlayer) && board[2][2].getText().equals(currentPlayer)) {
-            JOptionPane.showMessageDialog(null, "Player " + currentPlayer + " has won");
-            hasWinner = true;
-
+                }
+            }
         }
 
     }

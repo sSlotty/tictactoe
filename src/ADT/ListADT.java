@@ -1,12 +1,12 @@
 package ADT;
 
-public interface ListADT <T> {
+import java.util.ArrayList;
 
-    public void addData(T input);
+public interface ListADT{
 
-    public void clear();
-
-    public boolean isFull();
-    public boolean findEmptyNode() ;
+    public void push(int new_data);
+    public linkedList.node mergeSort(linkedList.node h);
+    public void printList(linkedList.node headref);
+    public ArrayList allData(linkedList.node headref);
 
 }
