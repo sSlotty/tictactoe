@@ -177,8 +177,6 @@ public class TicTacToeGUI extends JFrame {
         }
 
 
-        System.out.println(PP);
-
         for (int i = 0; i < WIN_COMBO.length; i++) {
             int count = 0;
             for (int j = 0; j < PP.size(); j++) {
