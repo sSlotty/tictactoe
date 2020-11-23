@@ -9,4 +9,7 @@ public interface ListADT{
     public void printList(linkedList.node headref);
     public ArrayList allData(linkedList.node headref);
 
+    public static linkedList.node getMiddle(linkedList.node head) {
+        return null;
+    }
 }
